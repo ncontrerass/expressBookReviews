@@ -6,17 +6,29 @@ const regd_users = express.Router();
 let users = [];
 
 const isValid = (username)=>{ //returns boolean
-// Returns true if username does NOT already exist
-const userExists = users.some(user => user.username === username);
-return !userExists;
+    // Filter the users array for any user with the same username
+    let userswithsamename = users.filter((user) => {
+        return user.username === username;
+    });
+    // Return true if any user with the same username is found, otherwise false
+    if (userswithsamename.length > 0) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 const authenticatedUser = (username,password)=>{ //returns boolean
-// Find the user with matching username AND password
-const validUser = users.find(user =>
-    user.username === username && user.password === password
-  );
-  return validUser !== undefined;
+    // Filter the users array for any user with the same username and password
+    let validusers = users.filter((user) => {
+        return (user.username === username && user.password === password);
+    });
+    // Return true if any valid user is found, otherwise false
+    if (validusers.length > 0) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 //only registered users can login
@@ -33,16 +45,14 @@ regd_users.post("/login", (req,res) => {
     if (authenticatedUser(username, password)) {
         // Generate JWT access token
         let accessToken = jwt.sign({
-            //data: password
-            username
+            data: password
         }, 'access', { expiresIn: 60 * 60 });
 
         // Store access token and username in session
-        // req.session.authorization = {
-        //     accessToken, username
-        // }
-
-        req.session.authorization = { accessToken };
+        req.session.authorization = {
+            accessToken, username
+        }
+        console.log("Login req session", req.session.authorization)
 
         return res.status(200).send("User successfully logged in");
     } else {
