@@ -116,7 +116,7 @@ public_users.get('/author/:author', async function (req, res) {
 });
 
 // Task 13: Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title',async function (req, res) {
     // const title = req.params.title;
 
     // const filteredData = Object.fromEntries(
